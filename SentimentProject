@@ -1,0 +1,41 @@
+import cv2
+import SentimentModule as sm
+import matplotlib.pyplot as plt
+import mimetypes
+
+
+mimetypes.init()
+def media_type(file):
+    mimestart = mimetypes.guess_type(file)[0]
+    if mimestart != None:
+        mimestart = mimestart.split('/')[0]
+    return mimestart
+
+
+file = input("Enter file name : ")
+if file == "0" or media_type(file)=="video":
+    if file =="0":
+        file=0
+
+    cap = cv2.VideoCapture(file)
+    detector = sm.sentimentDetector()
+    while True:
+        ret, frame = cap.read()
+        frame = detector.findSentiment(frame)
+
+        cv2.imshow('Emotion Detector', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cap.release()
+
+elif media_type(file)=="image":
+    cap = cv2.imread(file)
+    detector = sm.sentimentDetector()
+
+    img = detector.findSentiment(cap)
+
+    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    plt.show()
+
+
+cv2.destroyAllWindows()
